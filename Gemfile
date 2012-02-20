@@ -38,6 +38,8 @@ group :development, :test do
   gem 'guard'
   gem 'guard-cucumber'
   gem 'guard-bundler'
+  gem 'rspec_api_documentation'
+  gem 'rspec-rails'
 end
 
 group :test do
