@@ -38,7 +38,7 @@ group :development, :test do
   gem 'guard'
   gem 'guard-cucumber'
   gem 'guard-bundler'
-  gem 'rspec_api_documentation'
+  gem 'rspec_api_documentation', :path => "~/prog/src/rspec_api_documentation"
   gem 'rspec-rails'
 end
 
