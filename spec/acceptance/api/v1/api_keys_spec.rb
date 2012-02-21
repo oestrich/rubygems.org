@@ -4,7 +4,8 @@ require 'rspec_api_documentation/dsl'
 resource "Api Keys" do
   let(:user) { Factory(:user) }
 
-  let(:headers) { { "HTTP_ACCEPT" => accept, "HTTP_AUTHORIZATION" => "Basic #{ActiveSupport::Base64.encode64s("#{user.email}:password")}" } }
+  let(:auth_header) { "Basic #{ActiveSupport::Base64.encode64s("#{user.email}:password")}" }
+  let(:headers) { { "HTTP_ACCEPT" => accept, "HTTP_AUTHORIZATION" => auth_header } }
   let(:client) { RspecApiDocumentation::TestClient.new(self, :headers => headers) }
 
   get "/api/v1/api_key" do
@@ -16,6 +17,17 @@ resource "Api Keys" do
 
         response_body.should == {"rubygems_api_key" => user.api_key}.to_json
         status.should == 200
+      end
+
+      context "invalid login" do
+        let(:auth_header) { "Basic #{ActiveSupport::Base64.encode64s("#{user.email}:badpass")}" }
+
+        example "Getting your API Key - Invalid login" do
+          do_request
+
+          response_body.should == "HTTP Basic: Access denied.\n"
+          status.should == 401
+        end
       end
     end
 
