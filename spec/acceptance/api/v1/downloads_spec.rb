@@ -153,12 +153,46 @@ resource "Downloads" do
   end
 
   get "/api/v1/downloads/all.:format" do
+    before do
+      Download.stub!(:most_downloaded_all_time => [[version, 20], [version2, 15]])
+    end
+
     let(:hash) { {:gems => [[version.attributes, 20], [version2.attributes, 15]] } }
 
-    context "json"
+    context "json" do
+      let(:accept) { "application/json" }
+      let(:format) { "json" }
 
-    context "xml"
+      example "Viewing top download stats - JSON" do
+        do_request
 
-    context "yaml"
+        response_body.should == hash.to_json
+        status.should == 200
+      end
+    end
+
+    context "xml" do
+      let(:accept) { "application/xml" }
+      let(:format) { "xml" }
+
+      example "Viewing top download stats - XML" do
+        do_request
+
+        response_body.should == hash.to_xml
+        status.should == 200
+      end
+    end
+
+    context "yaml" do
+      let(:accept) { "text/yaml" }
+      let(:format) { "yaml" }
+
+      example "Viewing top download stats - XML" do
+        do_request
+
+        response_body.should == hash.to_yaml
+        status.should == 200
+      end
+    end
   end
 end
