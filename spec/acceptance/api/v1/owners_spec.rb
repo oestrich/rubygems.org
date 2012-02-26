@@ -2,7 +2,8 @@ require 'spec_helper'
 require 'rspec_api_documentation/dsl'
 
 resource "Owners" do
-  let(:user) { Factory(:user) }
+  let!(:user) { Factory(:user) }
+  let!(:user2) { Factory(:user) }
 
   let(:headers) { { "HTTP_ACCEPT" => accept, "HTTP_AUTHORIZATION" => user.api_key } }
   let(:client) { RspecApiDocumentation::TestClient.new(self, :headers => headers) }
@@ -54,6 +55,64 @@ resource "Owners" do
         response_body.should == rubygem.owners.to_yaml
         status.should == 200
       end
+    end
+  end
+
+  post "/api/v1/gems/:id/owners" do
+    parameter :email, "Owner email"
+
+    required_parameters :email
+
+    let(:accept) { "application/json" }
+    let(:id) { rubygem.name }
+
+    let(:email) { user2.email }
+
+    example "Creating a new owner" do
+      do_request
+
+      response_body.should == "Owner added successfully."
+      status.should == 200
+    end
+
+    example "Creating a new owner - Owner not found" do
+      do_request(:email => "not@found.com")
+
+      response_body.should == "Owner could not be found."
+      status.should == 404
+    end
+  end
+
+  delete "/api/v1/gems/:id/owners" do
+    parameter :email, "Owner email"
+
+    required_parameters :email
+
+    let(:id) { rubygem.name }
+    let(:accept) { "application/json" }
+    let(:email) { user.email }
+
+    example "Deleting an owner" do
+      rubygem.ownerships.create(:user => user2)
+
+      do_request
+
+      response_body.should == "Owner removed successfully."
+      status.should == 200
+    end
+
+    example "Deleting an owner - Last one" do
+      do_request
+
+      response_body.should == "Unable to remove owner."
+      status.should == 403
+    end
+
+    example "Deleting an owner - Owner not found" do
+      do_request(:email => "not@found.com")
+
+      response_body.should == "Owner could not be found."
+      status.should == 404
     end
   end
 end
