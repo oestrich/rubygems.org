@@ -119,7 +119,7 @@ resource "Downloads" do
       let(:accept) { "application/json" }
       let(:format) { "json" }
 
-      example "Viewing top download stats - JSON" do
+      example "Viewing top download stats of the day - JSON" do
         do_request
 
         response_body.should == hash.to_json
@@ -131,7 +131,7 @@ resource "Downloads" do
       let(:accept) { "application/xml" }
       let(:format) { "xml" }
 
-      example "Viewing top download stats - XML" do
+      example "Viewing top download stats of the day - XML" do
         do_request
 
         response_body.should == hash.to_xml
@@ -143,7 +143,7 @@ resource "Downloads" do
       let(:accept) { "text/yaml" }
       let(:format) { "yaml" }
 
-      example "Viewing top download stats - XML" do
+      example "Viewing top download stats of the day - YAML" do
         do_request
 
         response_body.should == hash.to_yaml
@@ -163,7 +163,7 @@ resource "Downloads" do
       let(:accept) { "application/json" }
       let(:format) { "json" }
 
-      example "Viewing top download stats - JSON" do
+      example "Viewing top download stats of all time - JSON" do
         do_request
 
         response_body.should == hash.to_json
@@ -175,7 +175,7 @@ resource "Downloads" do
       let(:accept) { "application/xml" }
       let(:format) { "xml" }
 
-      example "Viewing top download stats - XML" do
+      example "Viewing top download stats of all time - XML" do
         do_request
 
         response_body.should == hash.to_xml
@@ -187,7 +187,7 @@ resource "Downloads" do
       let(:accept) { "text/yaml" }
       let(:format) { "yaml" }
 
-      example "Viewing top download stats - XML" do
+      example "Viewing top download stats of all time - YAML" do
         do_request
 
         response_body.should == hash.to_yaml
