@@ -18,7 +18,7 @@ resource "Gems" do
     context "json" do
       let(:accept) { "application/json" }
 
-      example "Getting all of your rubygems" do
+      example "Getting all of your rubygems - JSON" do
         do_request
 
         response_body.should == user.rubygems.with_versions.to_json
@@ -29,7 +29,7 @@ resource "Gems" do
     context "xml" do
       let(:accept) { "application/xml" }
 
-      example "Getting all of your rubygems" do
+      example "Getting all of your rubygems - XML" do
         do_request
 
         response_body.should == user.rubygems.with_versions.to_xml
@@ -40,7 +40,7 @@ resource "Gems" do
     context "yaml" do
       let(:accept) { "text/yaml" }
 
-      example "Getting all of your rubygems" do
+      example "Getting all of your rubygems - YAML" do
         do_request
 
         response_body.should == JSON.parse(user.rubygems.with_versions.to_json).to_yaml
