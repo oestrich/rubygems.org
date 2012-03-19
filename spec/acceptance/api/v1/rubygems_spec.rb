@@ -100,4 +100,73 @@ resource "Gems" do
       end
     end
   end
+
+  # TODO Come back after we can handle binary data
+  post "/api/v1/gems"
+
+  delete "/api/v1/gems/yank" do
+    parameter :gem_name, "Name of gem"
+    parameter :version, "Version to be yanked"
+    parameter :platform, "Platform of gem"
+
+    required_parameters :gem_name, :version
+
+    let(:accept) { "application/json" }
+
+    let(:gem_name) { rubygem.name }
+    let(:version_gem) { rubygem.versions.first }
+    let(:version) { version_gem.number }
+
+    example "Yanking a version" do
+      do_request
+
+      response_body.should == "Successfully yanked gem: #{version_gem.to_title}"
+      status.should == 200
+    end
+
+    example "Yanking a version - Already yanked" do
+      Factory(:version, :rubygem => rubygem)
+      rubygem.yank!(version_gem)
+
+      do_request
+
+      response_body.should =~ /has already been yanked/
+      status.should == 422
+    end
+  end
+
+  put "/api/v1/gems/unyank" do
+    parameter :gem_name, "Name of gem"
+    parameter :version, "Version to be yanked"
+    parameter :platform, "Platform of gem"
+
+    required_parameters :gem_name, :version
+
+    before do
+      Factory(:version, :rubygem => rubygem)
+      rubygem.yank!(version_gem)
+    end
+
+    let(:accept) { "application/json" }
+
+    let(:gem_name) { rubygem.name }
+    let(:version_gem) { rubygem.versions.first }
+    let(:version) { version_gem.number }
+
+    example "Unyanking a version" do
+      do_request
+
+      response_body.should == "Successfully unyanked gem: #{version_gem.to_title}"
+      status.should == 200
+    end
+
+    example "Unyanking a version - Already indexed" do
+      version = Factory(:version, :rubygem => rubygem)
+
+      do_request(:version => version.number)
+
+      response_body.should =~ /already indexed/
+      status.should == 422
+    end
+  end
 end
